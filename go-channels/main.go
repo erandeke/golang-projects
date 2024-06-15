@@ -1,55 +1,23 @@
 package main
 
-import (
-	"fmt"
-	"time"
-)
+import "fmt"
 
 func main() {
 
-	fmt.Println("Starting go routine demo....")
+	mychannel := make(chan int)
 
-	evalNinjas := []string{"Tom", "Dick", "Harry"}
+	go sendValuesOverChannel(mychannel)
 
-	for _, ninjaBhau := range evalNinjas {
-		go attack(ninjaBhau)
+	for i := 0; i < 6; i++ {
+		fmt.Println(<-mychannel)
 	}
 
-	time.Sleep(time.Second)
-
-	fmt.Println("ending go routine demo....")
-
-	fmt.Println()
-	fmt.Println()
-
-	smokeSignal := make(chan bool)
-
-	startChannel := time.Now()
-
-	fmt.Println("Starting channels demo......", startChannel)
-
-	fmt.Println()
-
-	defer func() {
-		fmt.Println(time.Since(startChannel))
-	}()
-
-	evilNin := "Hurry"
-	go AttackNinja(evilNin, smokeSignal)
-
-	fmt.Println(<-smokeSignal)
-
-	fmt.Println("ending channels demo......")
-
 }
 
-func attack(ninjaBhau string) {
-	fmt.Println("The ninja attack by", ninjaBhau)
+func sendValuesOverChannel(mychannel chan int) {
+	for i := 0; i < 6; i++ {
+		mychannel <- i //sending value
+	}
+	close(mychannel)
 
-}
-
-func AttackNinja(target string, isAttacked chan bool) {
-	time.Sleep(time.Second)
-	fmt.Println("Attack Ninja by", target)
-	isAttacked <- true
 }
